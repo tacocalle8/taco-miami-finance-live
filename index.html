@@ -2,502 +2,93 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#0f172a">
   <title>Taco Miami | Owner & Finance Hub</title>
   <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
-
   <style>
-    :root {
-      --bg:#f5f7fb;
-      --card:#fff;
-      --ink:#172033;
-      --muted:#687386;
-      --line:#e4e8f0;
-      --nav:#0f172a;
-      --green:#17864b;
-      --green2:#eaf8f0;
-      --red:#c93c3c;
-      --red2:#fff0f0;
-      --blue:#246bfd;
-      --shadow:0 8px 24px rgba(15,23,42,.07)
-    }
-
-    * { box-sizing:border-box }
-
-    body {
-      margin:0;
-      background:var(--bg);
-      color:var(--ink);
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif
-    }
-
-    button,input,select { font:inherit }
-
-    .top {
-      background:linear-gradient(135deg,#0f172a,#1e293b);
-      color:white;
-      padding:22px 18px
-    }
-
-    .top-inner {
-      max-width:1180px;
-      margin:auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px
-    }
-
-    .brand h1 {
-      font-size:22px;
-      margin:0 0 4px
-    }
-
-    .brand p {
-      margin:0;
-      color:#cbd5e1;
-      font-size:13px
-    }
-
-    .badge {
-      background:#ffffff18;
-      border:1px solid #ffffff24;
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:12px;
-      white-space:nowrap
-    }
-
-    .nav {
-      background:#fff;
-      border-bottom:1px solid var(--line);
-      position:sticky;
-      top:0;
-      z-index:10;
-      overflow:auto
-    }
-
-    .nav-inner {
-      max-width:1180px;
-      margin:auto;
-      display:flex;
-      gap:4px;
-      padding:8px 12px
-    }
-
-    .tab {
-      border:0;
-      background:transparent;
-      color:var(--muted);
-      font-weight:750;
-      padding:11px 14px;
-      border-radius:10px;
-      cursor:pointer;
-      white-space:nowrap
-    }
-
-    .tab.active {
-      background:#eaf0ff;
-      color:var(--blue)
-    }
-
-    main {
-      max-width:1180px;
-      margin:22px auto;
-      padding:0 14px 50px
-    }
-
-    .page { display:none }
-    .page.active { display:block }
-
-    .page-title {
-      display:flex;
-      align-items:end;
-      justify-content:space-between;
-      gap:12px;
-      margin:0 0 15px
-    }
-
-    .page-title h2 {
-      font-size:21px;
-      margin:0
-    }
-
-    .page-title p {
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:13px
-    }
-
-    .grid {
-      display:grid;
-      gap:14px
-    }
-
-    .summary {
-      grid-template-columns:repeat(5,minmax(0,1fr))
-    }
-
-    .connections {
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      margin-bottom:14px
-    }
-
-    .two {
-      grid-template-columns:1fr 1.6fr
-    }
-
-    .property-grid {
-      grid-template-columns:repeat(3,minmax(0,1fr))
-    }
-
-    .card {
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:var(--shadow)
-    }
-
-    .metric .label {
-      color:var(--muted);
-      font-size:12px;
-      font-weight:700
-    }
-
-    .metric .value {
-      font-size:24px;
-      font-weight:850;
-      margin-top:7px
-    }
-
-    .metric small {
-      display:block;
-      margin-top:5px;
-      color:var(--muted)
-    }
-
-    .green { color:var(--green) }
-    .red { color:var(--red) }
-
-    .connect-card {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:15px
-    }
-
-    .connect-card h3 {
-      margin:0 0 4px;
-      font-size:16px
-    }
-
-    .connect-card p {
-      margin:0;
-      color:var(--muted);
-      font-size:12px
-    }
-
-    .status {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size:12px;
-      font-weight:800;
-      margin-top:8px
-    }
-
-    .dot {
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:#94a3b8
-    }
-
-    .status.ok { color:var(--green) }
-    .status.ok .dot { background:var(--green) }
-
-    .btn {
-      border:0;
-      border-radius:10px;
-      padding:10px 13px;
-      font-weight:800;
-      cursor:pointer
-    }
-
-    .btn-primary {
-      background:var(--blue);
-      color:white
-    }
-
-    .btn-green {
-      background:var(--green);
-      color:white
-    }
-
-    .btn-dark {
-      background:var(--nav);
-      color:white
-    }
-
-    .btn-light {
-      background:#edf1f7;
-      color:#334155
-    }
-
-    .btn-red {
-      background:var(--red2);
-      color:var(--red)
-    }
-
-    .btn:disabled {
-      opacity:.55;
-      cursor:not-allowed
-    }
-
-    .section-title {
-      font-size:16px;
-      margin:0 0 12px
-    }
-
-    .form-grid {
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:11px
-    }
-
-    .field {
-      display:flex;
-      flex-direction:column;
-      gap:6px
-    }
-
-    .field.full { grid-column:1/-1 }
-
-    .field label {
-      font-size:12px;
-      color:var(--muted);
-      font-weight:750
-    }
-
-    .field input,
-    .field select {
-      width:100%;
-      border:1px solid #d7dce6;
-      background:white;
-      color:var(--ink);
-      border-radius:10px;
-      padding:11px;
-      outline:none
-    }
-
-    .table-wrap {
-      overflow:auto;
-      border:1px solid var(--line);
-      border-radius:12px
-    }
-
-    table {
-      width:100%;
-      border-collapse:collapse;
-      min-width:760px
-    }
-
-    th,td {
-      text-align:left;
-      padding:11px 12px;
-      border-bottom:1px solid var(--line);
-      font-size:12px
-    }
-
-    th {
-      background:#f8fafc;
-      color:#5f6b7c;
-      font-size:11px;
-      text-transform:uppercase
-    }
-
-    tr:last-child td { border-bottom:0 }
-
-    .pill {
-      display:inline-block;
-      border-radius:999px;
-      padding:4px 8px;
-      font-weight:800
-    }
-
-    .pill.income {
-      background:var(--green2);
-      color:var(--green)
-    }
-
-    .pill.expense {
-      background:var(--red2);
-      color:var(--red)
-    }
-
-    .empty {
-      text-align:center;
-      color:var(--muted);
-      padding:30px!important
-    }
-
-    .delete {
-      border:0;
-      background:transparent;
-      color:var(--red);
-      font-weight:800;
-      cursor:pointer
-    }
-
-    .filters {
-      display:flex;
-      gap:9px;
-      flex-wrap:wrap;
-      margin-bottom:12px
-    }
-
-    .filters input,
-    .filters select {
-      border:1px solid var(--line);
-      background:white;
-      border-radius:10px;
-      padding:9px 10px
-    }
-
-    .property-card h3 {
-      margin:0;
-      font-size:15px
-    }
-
-    .property-card .amount {
-      font-size:23px;
-      font-weight:850;
-      margin:10px 0 4px
-    }
-
-    .property-card small { color:var(--muted) }
-
-    .tax-box {
-      background:linear-gradient(135deg,#132238,#1f3b58);
-      color:white
-    }
-
-    .tax-grid {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:12px
-    }
-
-    .tax-box .label {
-      color:#cbd5e1;
-      font-size:12px
-    }
-
-    .tax-box .value {
-      font-size:25px;
-      font-weight:850;
-      margin-top:5px
-    }
-
-    .tax-box .pending { color:#ffd166 }
-
-    .fixed-row {
-      display:flex;
-      justify-content:space-between;
-      padding:10px 0;
-      border-bottom:1px solid var(--line)
-    }
-
-    .notice {
-      border-radius:12px;
-      padding:12px 14px;
-      font-size:13px;
-      margin-bottom:14px;
-      display:none
-    }
-
-    .notice.show { display:block }
-
-    .notice.ok {
-      background:var(--green2);
-      color:#0d6b3a
-    }
-
-    .notice.err {
-      background:var(--red2);
-      color:#a22b2b
-    }
-
-    .actions {
-      display:flex;
-      gap:9px;
-      flex-wrap:wrap
-    }
-
-    .footer {
-      text-align:center;
-      color:var(--muted);
-      font-size:12px;
-      margin-top:28px
-    }
-
-    @media(max-width:900px) {
-      .summary { grid-template-columns:repeat(2,1fr) }
-      .connections,.two { grid-template-columns:1fr }
-      .property-grid { grid-template-columns:repeat(2,1fr) }
-    }
-
-    @media(max-width:560px) {
-      .badge { display:none }
-      .summary,.property-grid { grid-template-columns:1fr 1fr }
-      .form-grid { grid-template-columns:1fr }
-      .field.full { grid-column:auto }
-      .tax-grid { grid-template-columns:1fr }
-      .connect-card {
-        align-items:flex-start;
-        flex-direction:column
-      }
-      .metric .value { font-size:21px }
-      .card { padding:14px }
-    }
+    :root{--bg:#f4f7fb;--card:#fff;--ink:#172033;--muted:#687386;--line:#e3e8f1;--nav:#0f172a;--green:#17864b;--green2:#eaf8f0;--red:#c93c3c;--red2:#fff0f0;--blue:#246bfd;--blue2:#eaf0ff;--gold:#b7791f;--shadow:0 8px 24px rgba(15,23,42,.07)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,select{font:inherit}button{touch-action:manipulation}
+    .top{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:20px 16px}.top-inner{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand h1{font-size:22px;margin:0 0 4px}.brand p{margin:0;color:#cbd5e1;font-size:13px}.badge{background:#ffffff18;border:1px solid #ffffff24;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap}
+    .nav{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;overflow:auto}.nav-inner{max-width:1180px;margin:auto;display:flex;gap:4px;padding:8px 12px}.tab{border:0;background:transparent;color:var(--muted);font-weight:750;padding:11px 14px;border-radius:10px;cursor:pointer;white-space:nowrap}.tab.active{background:var(--blue2);color:var(--blue)}
+    main{max-width:1180px;margin:20px auto;padding:0 14px 52px}.page{display:none}.page.active{display:block}.page-title{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:0 0 15px}.page-title h2{font-size:21px;margin:0}.page-title p{margin:4px 0 0;color:var(--muted);font-size:13px}.grid{display:grid;gap:14px}.summary{grid-template-columns:repeat(5,minmax(0,1fr))}.connections{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:14px}.two{grid-template-columns:1fr 1.6fr}.property-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}.metric .label{color:var(--muted);font-size:12px;font-weight:700}.metric .value{font-size:24px;font-weight:850;margin-top:7px}.metric small{display:block;margin-top:5px;color:var(--muted)}.green{color:var(--green)}.red{color:var(--red)}
+    .connect-card{display:flex;justify-content:space-between;align-items:center;gap:15px}.connect-card h3{margin:0 0 4px;font-size:16px}.connect-card p{margin:0;color:var(--muted);font-size:12px}.status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;margin-top:8px}.dot{width:8px;height:8px;border-radius:50%;background:#94a3b8}.status.ok{color:var(--green)}.status.ok .dot{background:var(--green)}.status.warn{color:var(--gold)}.status.warn .dot{background:#d69e2e}
+    .btn{border:0;border-radius:10px;padding:10px 13px;font-weight:800;cursor:pointer}.btn-primary{background:var(--blue);color:#fff}.btn-green{background:var(--green);color:#fff}.btn-dark{background:var(--nav);color:#fff}.btn-light{background:#edf1f7;color:#334155}.btn-red{background:var(--red2);color:var(--red)}.btn:disabled{opacity:.55;cursor:not-allowed}.actions{display:flex;gap:9px;flex-wrap:wrap}
+    .section-title{font-size:16px;margin:0 0 12px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted);font-weight:750}.field input,.field select{width:100%;border:1px solid #d7dce6;background:#fff;color:var(--ink);border-radius:10px;padding:11px;outline:none}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #246bfd20}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:12px}th{background:#f8fafc;color:#5f6b7c;font-size:11px;text-transform:uppercase}tr:last-child td{border-bottom:0}.pill{display:inline-block;border-radius:999px;padding:4px 8px;font-weight:800}.pill.income{background:var(--green2);color:var(--green)}.pill.expense{background:var(--red2);color:var(--red)}.empty{text-align:center;color:var(--muted);padding:28px!important}.delete{border:0;background:transparent;color:var(--red);font-weight:800;cursor:pointer}.filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:12px}.filters input,.filters select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px}
+    .account-list{display:grid;gap:10px;margin-top:13px}.account{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px}.account strong{display:block;font-size:14px}.account small{color:var(--muted);display:block}.account-balance{text-align:right;font-weight:850}.property-card h3{margin:0;font-size:15px}.property-card .amount{font-size:23px;font-weight:850;margin:10px 0 4px}.property-card small{color:var(--muted)}
+    .tax-box{background:linear-gradient(135deg,#132238,#1f3b58);color:#fff}.tax-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tax-box .label{color:#cbd5e1;font-size:12px}.tax-box .value{font-size:25px;font-weight:850;margin-top:5px}.tax-box .pending{color:#ffd166}.fixed-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+    .notice{border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:14px;display:none;white-space:pre-line}.notice.show{display:block}.notice.ok{background:var(--green2);color:#0d6b3a}.notice.err{background:var(--red2);color:#a22b2b}.notice.info{background:var(--blue2);color:#1f55c5}.setup{border-left:4px solid #d69e2e;margin-bottom:14px}.setup code{display:block;background:#0f172a;color:#e2e8f0;padding:10px;border-radius:8px;margin-top:8px;overflow:auto}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:28px}
+    .modal{position:fixed;inset:0;background:#0f172ae8;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.login-card{width:min(420px,100%);background:#fff;border-radius:18px;padding:24px;box-shadow:0 24px 80px #0007}.login-card h2{margin:0 0 7px}.login-card p{color:var(--muted);margin:0 0 18px}.login-error{min-height:20px;color:var(--red);font-size:13px;margin-top:10px}.spinner{width:18px;height:18px;border:3px solid #ffffff66;border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:middle;animation:spin .7s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:900px){.summary{grid-template-columns:repeat(2,1fr)}.connections,.two{grid-template-columns:1fr}.property-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.badge{display:none}.summary,.property-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.tax-grid{grid-template-columns:1fr}.connect-card{align-items:flex-start;flex-direction:column}.metric .value{font-size:21px}.card{padding:14px}.page-title{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
-
 <body>
-  <header class="top">
-    <div class="top-inner">
-      <div class="brand">
-        <h1>🌮 Taco Miami Taqueria</h1>
-        <p>Owner & Finance Hub</p>
-      </div>
-      <div class="badge">Acceso privado de propietarios</div>
-    </div>
-  </header>
-
-  <nav class="nav">
-    <div class="nav-inner">
-      <button class="tab active" data-page="resumen">Resumen</button>
-      <button class="tab" data-page="movimientos">Movimientos</button>
-      <button class="tab" data-page="propiedades">Propiedades</button>
-      <button class="tab" data-page="tax">Sales Tax</button>
-      <button class="tab" data-page="reportes">Reportes</button>
-    </div>
-  </nav>
+  <div id="loginModal" class="modal" aria-hidden="true">
+    <form id="loginForm" class="login-card">
+      <h2>Acceso de propietarios</h2><p>Ingresa la contraseña privada del Owner & Finance Hub.</p>
+      <div class="field"><label for="ownerPassword">Contraseña</label><input id="ownerPassword" type="password" autocomplete="current-password" required></div>
+      <button id="loginButton" class="btn btn-primary" style="width:100%;margin-top:14px" type="submit">Entrar</button><div id="loginError" class="login-error" role="alert"></div>
+    </form>
+  </div>
+  <header class="top"><div class="top-inner"><div class="brand"><h1>🌮 Taco Miami Taqueria</h1><p>Owner & Finance Hub</p></div><div class="badge">Acceso privado de propietarios</div></div></header>
+  <nav class="nav"><div class="nav-inner"><button class="tab active" data-page="resumen">Resumen</button><button class="tab" data-page="movimientos">Movimientos</button><button class="tab" data-page="propiedades">Propiedades</button><button class="tab" data-page="tax">Sales Tax</button><button class="tab" data-page="reportes">Reportes</button></div></nav>
 
   <main>
     <div id="notice" class="notice"></div>
-
+    <div id="setupCard" class="card setup" hidden><h3 class="section-title">Configuración pendiente en Vercel</h3><div id="setupText"></div></div>
     <section id="resumen" class="page active">
-      <div class="page-title">
-        <div>
-          <h2>Resumen financiero</h2>
-          <p>Vista consolidada de Shell y Food Truck Original</p>
-        </div>
-      </div>
-
+      <div class="page-title"><div><h2>Resumen financiero</h2><p>Vista consolidada de Shell y Food Truck Original</p></div><button id="logoutButton" class="btn btn-light">Cerrar sesión</button></div>
       <div class="grid connections">
-        <div class="card connect-card">
-          <div>
-            <h3>🏦
+        <div class="card connect-card"><div><h3>🏦 Wells Fargo por Plaid</h3><p>Conexión segura, cuentas y movimientos diarios</p><div id="bankStatus" class="status"><span class="dot"></span><span>Comprobando configuración…</span></div></div><div class="actions"><button id="syncButton" class="btn btn-light" disabled>Actualizar</button><button id="connectBank" class="btn btn-primary" disabled>Conectar banco</button></div></div>
+        <div class="card connect-card"><div><h3>🍀 Clover</h3><p>Shell y Food Truck Original</p><div class="status warn"><span class="dot"></span><span>Conexión pendiente</span></div></div><button class="btn btn-light" disabled>Próximo paso</button></div>
+      </div>
+      <div id="accountsCard" class="card" hidden><h3 class="section-title">Cuentas bancarias guardadas</h3><div id="accountList" class="account-list"></div></div>
+      <div class="grid summary" style="margin-top:14px">
+        <div class="card metric"><div class="label">SALDO BANCARIO</div><div id="mBank" class="value">$0.00</div><small>Cuentas conectadas</small></div><div class="card metric"><div class="label">INGRESOS DEL MES</div><div id="mIncome" class="value green">$0.00</div><small>Manual + banco</small></div><div class="card metric"><div class="label">GASTOS DEL MES</div><div id="mExpense" class="value red">$0.00</div><small>Manual + banco</small></div><div class="card metric"><div class="label">SALES TAX PENDIENTE</div><div id="mTax" class="value">$0.00</div><small>Por transferir</small></div><div class="card metric"><div class="label">RESULTADO</div><div id="mNet" class="value">$0.00</div><small>Ingresos menos gastos</small></div>
+      </div>
+      <div class="grid two" style="margin-top:14px"><div class="card"><h3 class="section-title">Gastos fijos</h3><div class="fixed-row"><span>Renta Shell</span><strong>$2,200/mes</strong></div><div class="fixed-row"><span>Storage / Nursery</span><strong>$1,400/mes</strong></div><div class="fixed-row"><span>Empleado</span><strong>$600/semana</strong></div><div class="fixed-row"><span>Base mensual estimada</span><strong>$6,000</strong></div></div><div class="card"><h3 class="section-title">Últimos movimientos bancarios</h3><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Cuenta</th><th>Monto</th></tr></thead><tbody id="recentBankRows"><tr><td colspan="4" class="empty">Conecta Wells Fargo para ver movimientos.</td></tr></tbody></table></div></div></div>
+    </section>
+
+    <section id="movimientos" class="page"><div class="page-title"><div><h2>Movimientos</h2><p>Registros bancarios automáticos y entradas manuales</p></div></div><div class="grid two"><form id="movementForm" class="card"><h3 class="section-title">Agregar movimiento manual</h3><div class="form-grid"><div class="field"><label>Fecha</label><input id="mvDate" type="date" required></div><div class="field"><label>Tipo</label><select id="mvType"><option value="income">Ingreso</option><option value="expense">Gasto</option></select></div><div class="field"><label>Tienda</label><select id="mvStore"><option>Shell</option><option>Food Truck Original</option></select></div><div class="field"><label>Monto</label><input id="mvAmount" type="number" min="0" step="0.01" required></div><div class="field full"><label>Descripción</label><input id="mvDescription" required placeholder="Ej. renta, compra o venta en efectivo"></div></div><button class="btn btn-green" style="margin-top:12px" type="submit">Guardar movimiento</button></form><div class="card"><h3 class="section-title">Historial manual</h3><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Tienda</th><th>Descripción</th><th>Monto</th><th></th></tr></thead><tbody id="movementRows"></tbody></table></div></div></div></section>
+
+    <section id="propiedades" class="page"><div class="page-title"><div><h2>Ingresos por propiedad</h2><p>Doral, Remi on the River y Grove Station</p></div></div><form id="propertyForm" class="card" style="margin-bottom:14px"><div class="form-grid"><div class="field"><label>Fecha</label><input id="propDate" type="date" required></div><div class="field"><label>Propiedad</label><select id="propName"><option>Céntrico Doral</option><option>Mirador Doral</option><option>Windsor Doral</option><option>Remi on the River</option><option>Grove Station</option><option>Otra propiedad</option></select></div><div class="field"><label>Ingreso</label><input id="propAmount" type="number" min="0" step="0.01" required></div><div class="field"><label>Nota</label><input id="propNote" placeholder="Opcional"></div></div><button class="btn btn-green" style="margin-top:12px" type="submit">Guardar visita</button></form><div id="propertyCards" class="grid property-grid"></div></section>
+
+    <section id="tax" class="page"><div class="page-title"><div><h2>Sales Tax</h2><p>Cobrado, transferido y pendiente para savings</p></div></div><div class="card tax-box"><div class="tax-grid"><div><div class="label">COBRADO</div><div id="taxCollected" class="value">$0.00</div></div><div><div class="label">TRANSFERIDO</div><div id="taxTransferred" class="value">$0.00</div></div><div><div class="label">PENDIENTE</div><div id="taxPending" class="value pending">$0.00</div></div></div></div><form id="taxForm" class="card" style="margin-top:14px"><h3 class="section-title">Registrar sales tax</h3><div class="form-grid"><div class="field"><label>Fecha</label><input id="taxDate" type="date" required></div><div class="field"><label>Acción</label><select id="taxType"><option value="collected">Cobrado</option><option value="transferred">Transferido a savings</option></select></div><div class="field"><label>Monto</label><input id="taxAmount" type="number" min="0" step="0.01" required></div><div class="field"><label>Nota</label><input id="taxNote" placeholder="Opcional"></div></div><button class="btn btn-dark" style="margin-top:12px" type="submit">Guardar</button></form></section>
+
+    <section id="reportes" class="page"><div class="page-title"><div><h2>Reportes</h2><p>Respaldo de registros manuales y resumen mensual</p></div></div><div class="grid two"><div class="card"><h3 class="section-title">Exportar</h3><p style="color:var(--muted);font-size:13px">Descarga un respaldo JSON o un reporte CSV.</p><div class="actions"><button id="exportJson" class="btn btn-dark">Respaldo JSON</button><button id="exportCsv" class="btn btn-light">Reporte CSV</button></div></div><div class="card"><h3 class="section-title">Importar respaldo</h3><div class="field"><label>Archivo JSON del Owner Hub</label><input id="importFile" type="file" accept="application/json"></div><button id="importButton" class="btn btn-primary" style="margin-top:12px">Importar</button></div></div></section>
+    <div class="footer">Taco Miami Taqueria · Información financiera privada</div>
+  </main>
+
+  <script>
+    const $=id=>document.getElementById(id),money=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number(value)||0),today=()=>new Date().toISOString().slice(0,10);
+    const STORE_KEY='tacoMiamiFinanceV2';let state={movements:[],properties:[],tax:[]},bankAccounts=[],bankTransactions=[],appConfig={};
+    try{state={...state,...JSON.parse(localStorage.getItem(STORE_KEY)||'{}')}}catch{}
+    const save=()=>localStorage.setItem(STORE_KEY,JSON.stringify(state));
+    function showNotice(message,type='info',timeout=0){const box=$('notice');box.textContent=message;box.className=`notice show ${type}`;if(timeout)setTimeout(()=>box.className='notice',timeout)}
+    function api(path,options={}){return fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(options.headers||{})},...options}).then(async response=>{const data=await response.json().catch(()=>({}));if(!response.ok){const error=new Error(data.error||`Error ${response.status}`);error.code=data.code;error.requestId=data.requestId;throw error}return data})}
+    function setBusy(button,busy,label){button.disabled=busy;if(busy)button.innerHTML='<span class="spinner"></span>';else button.textContent=label}
+    document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab,.page').forEach(el=>el.classList.remove('active'));tab.classList.add('active');$(tab.dataset.page).classList.add('active')}));['mvDate','propDate','taxDate'].forEach(id=>$(id).value=today());
+
+    async function bootstrap(){try{appConfig=await api('/api/config');renderSetup();if(!appConfig.authConfigured)return;if(!appConfig.authenticated){$('loginModal').classList.add('show');$('loginModal').setAttribute('aria-hidden','false');return}await loadBankData();if(new URLSearchParams(location.search).has('oauth_state_id'))resumePlaidOAuth()}catch(error){showNotice(`No se pudo comprobar la configuración: ${error.message}`,'err')}}
+    function renderSetup(){const missing=[];if(!appConfig.authConfigured)missing.push('OWNER_PASSWORD');if(!appConfig.plaidConfigured)missing.push('PLAID_CLIENT_ID y PLAID_SECRET');if(!appConfig.databaseConfigured)missing.push('DATABASE_URL de Neon');const card=$('setupCard');if(missing.length){card.hidden=false;$('setupText').innerHTML=`Falta configurar: <strong>${missing.join(', ')}</strong>.<br>Redirect URI para Plaid:<code>${appConfig.redirectUri||'No disponible'}</code>`;$('bankStatus').className='status warn';$('bankStatus').innerHTML='<span class="dot"></span><span>Configuración incompleta</span>'}else{card.hidden=true;$('connectBank').disabled=false;$('bankStatus').innerHTML='<span class="dot"></span><span>Listo para conectar</span>'}}
+    $('loginForm').addEventListener('submit',async event=>{event.preventDefault();const button=$('loginButton');$('loginError').textContent='';setBusy(button,true,'Entrar');try{await api('/api/auth/login',{method:'POST',body:JSON.stringify({password:$('ownerPassword').value})});$('ownerPassword').value='';$('loginModal').classList.remove('show');appConfig.authenticated=true;renderSetup();await loadBankData();if(new URLSearchParams(location.search).has('oauth_state_id'))resumePlaidOAuth()}catch(error){$('loginError').textContent=error.message}finally{setBusy(button,false,'Entrar')}});$('logoutButton').addEventListener('click',async()=>{await api('/api/auth/logout',{method:'POST'}).catch(()=>{});location.reload()});
+    async function loadBankData(){try{const data=await api('/api/plaid/accounts?limit=200');bankAccounts=data.accounts||[];bankTransactions=data.transactions||[];renderBank();renderAll()}catch(error){if(error.code==='DATABASE_NOT_CONFIGURED'||error.code==='OWNER_PASSWORD_REQUIRED')renderSetup();else if(error.code!=='AUTH_REQUIRED')showNotice(`Banco: ${error.message}`,'err')}}
+    function renderBank(){const connected=bankAccounts.length>0;$('accountsCard').hidden=!connected;$('syncButton').disabled=!connected;$('connectBank').textContent=connected?'Conectar otra cuenta':'Conectar banco';$('bankStatus').className=`status ${connected?'ok':''}`;$('bankStatus').innerHTML=`<span class="dot"></span><span>${connected?`${bankAccounts.length} cuenta(s) guardada(s)`:'Listo para conectar'}</span>`;$('accountList').innerHTML=bankAccounts.map(account=>`<div class="account"><div><strong>${escapeHtml(account.institution_name||'Banco')} · ${escapeHtml(account.name)}</strong><small>${escapeHtml(account.subtype||account.type||'Cuenta')} ···· ${escapeHtml(account.mask||'')}</small></div><div class="account-balance">${money(account.current_balance)}<small>Disponible ${money(account.available_balance)}</small></div></div>`).join('');$('recentBankRows').innerHTML=bankTransactions.length?bankTransactions.slice(0,12).map(tx=>`<tr><td>${tx.date}</td><td>${escapeHtml(tx.merchant_name||tx.name)}</td><td>${escapeHtml(tx.account_name||'')}</td><td class="${Number(tx.amount)>0?'red':'green'}">${money(Math.abs(Number(tx.amount)))}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">La cuenta está conectada. Presiona Actualizar para traer movimientos.</td></tr>'}
+
+    $('connectBank').addEventListener('click',startPlaid);async function startPlaid(){const button=$('connectBank');setBusy(button,true,'Conectar banco');try{if(!window.Plaid)throw new Error('Plaid Link no cargó. Revisa la conexión a internet.');const data=await api('/api/plaid/create-link-token',{method:'POST',body:'{}'});localStorage.setItem('plaid_link_token',data.linkToken);createPlaidHandler(data.linkToken).open()}catch(error){showPlaidError(error)}finally{setBusy(button,false,bankAccounts.length?'Conectar otra cuenta':'Conectar banco')}}
+    function createPlaidHandler(linkToken,receivedRedirectUri){return Plaid.create({token:linkToken,receivedRedirectUri,onSuccess:async(publicToken,metadata)=>{try{showNotice('Wells Fargo autorizado. Guardando cuentas…','info');const result=await api('/api/plaid/exchange-public-token',{method:'POST',body:JSON.stringify({publicToken,institution:metadata.institution})});localStorage.removeItem('plaid_link_token');history.replaceState({},'',location.pathname);showNotice(`Conexión guardada correctamente: ${result.savedAccounts} cuenta(s).`,'ok',7000);await syncTransactions();await loadBankData()}catch(error){showPlaidError(error)}},onExit:(error,metadata)=>{if(error)showPlaidError({message:error.display_message||error.error_message||'Plaid cerró con un error.',code:error.error_code,requestId:metadata?.request_id});else showNotice('Conexión cerrada sin cambios.','info',4000)},onEvent:(name,metadata)=>{if(name==='ERROR')console.warn('Plaid Link error',metadata?.error_code,metadata?.request_id)}})}
+    function resumePlaidOAuth(){const token=localStorage.getItem('plaid_link_token');if(!token){showNotice('Wells Fargo regresó correctamente, pero falta el Link token original. Presiona “Conectar banco” una vez más.','err');history.replaceState({},'',location.pathname);return}try{showNotice('Regresaste de Wells Fargo. Finalizando y guardando la conexión…','info');createPlaidHandler(token,location.href).open()}catch(error){showPlaidError(error)}}
+    function showPlaidError(error){const request=error.requestId?`\nID de soporte: ${error.requestId}`:'';showNotice(`${error.message||'No se pudo conectar el banco.'}${error.code?`\nCódigo: ${error.code}`:''}${request}`,'err')}
+    $('syncButton').addEventListener('click',syncTransactions);async function syncTransactions(){const button=$('syncButton');setBusy(button,true,'Actualizar');try{const result=await api('/api/plaid/sync-transactions',{method:'POST',body:'{}'});showNotice(`Banco actualizado. ${result.changed} cambio(s) procesado(s).`,'ok',5000);await loadBankData()}catch(error){showPlaidError(error)}finally{setBusy(button,false,'Actualizar')}}
+
+    $('movementForm').addEventListener('submit',event=>{event.preventDefault();state.movements.unshift({id:crypto.randomUUID(),date:$('mvDate').value,type:$('mvType').value,store:$('mvStore').value,amount:Number($('mvAmount').value),description:$('mvDescription').value.trim()});save();event.target.reset();$('mvDate').value=today();renderAll();showNotice('Movimiento guardado.','ok',3000)});$('propertyForm').addEventListener('submit',event=>{event.preventDefault();state.properties.unshift({id:crypto.randomUUID(),date:$('propDate').value,name:$('propName').value,amount:Number($('propAmount').value),note:$('propNote').value.trim()});save();event.target.reset();$('propDate').value=today();renderAll();showNotice('Ingreso de propiedad guardado.','ok',3000)});$('taxForm').addEventListener('submit',event=>{event.preventDefault();state.tax.unshift({id:crypto.randomUUID(),date:$('taxDate').value,type:$('taxType').value,amount:Number($('taxAmount').value),note:$('taxNote').value.trim()});save();event.target.reset();$('taxDate').value=today();renderAll();showNotice('Sales tax guardado.','ok',3000)});document.addEventListener('click',event=>{const button=event.target.closest('[data-delete]');if(!button)return;const [group,id]=button.dataset.delete.split(':');state[group]=state[group].filter(item=>item.id!==id);save();renderAll()});
+    function renderAll(){renderMovements();renderProperties();renderTax();renderMetrics()}function renderMovements(){$('movementRows').innerHTML=state.movements.length?state.movements.map(item=>`<tr><td>${item.date}</td><td><span class="pill ${item.type}">${item.type==='income'?'Ingreso':'Gasto'}</span></td><td>${escapeHtml(item.store)}</td><td>${escapeHtml(item.description)}</td><td>${money(item.amount)}</td><td><button class="delete" data-delete="movements:${item.id}">Eliminar</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No hay movimientos manuales.</td></tr>'}function renderProperties(){const names=['Céntrico Doral','Mirador Doral','Windsor Doral','Remi on the River','Grove Station','Otra propiedad'];$('propertyCards').innerHTML=names.map(name=>{const rows=state.properties.filter(item=>item.name===name),total=rows.reduce((sum,item)=>sum+item.amount,0);return `<div class="card property-card"><h3>${escapeHtml(name)}</h3><div class="amount">${money(total)}</div><small>${rows.length} visita(s) registrada(s)</small></div>`}).join('')}function renderTax(){const collected=state.tax.filter(item=>item.type==='collected').reduce((sum,item)=>sum+item.amount,0),transferred=state.tax.filter(item=>item.type==='transferred').reduce((sum,item)=>sum+item.amount,0);$('taxCollected').textContent=money(collected);$('taxTransferred').textContent=money(transferred);$('taxPending').textContent=money(Math.max(0,collected-transferred));$('mTax').textContent=money(Math.max(0,collected-transferred))}function renderMetrics(){const month=today().slice(0,7),manualIncome=state.movements.filter(item=>item.date.startsWith(month)&&item.type==='income').reduce((sum,item)=>sum+item.amount,0)+state.properties.filter(item=>item.date.startsWith(month)).reduce((sum,item)=>sum+item.amount,0),manualExpense=state.movements.filter(item=>item.date.startsWith(month)&&item.type==='expense').reduce((sum,item)=>sum+item.amount,0),bankIncome=bankTransactions.filter(item=>String(item.date).startsWith(month)&&Number(item.amount)<0).reduce((sum,item)=>sum+Math.abs(Number(item.amount)),0),bankExpense=bankTransactions.filter(item=>String(item.date).startsWith(month)&&Number(item.amount)>0).reduce((sum,item)=>sum+Number(item.amount),0),income=manualIncome+bankIncome,expense=manualExpense+bankExpense,net=income-expense,balance=bankAccounts.reduce((sum,item)=>sum+Number(item.current_balance||0),0);$('mBank').textContent=money(balance);$('mIncome').textContent=money(income);$('mExpense').textContent=money(expense);$('mNet').textContent=money(net);$('mNet').className=`value ${net<0?'red':'green'}`}
+    function escapeHtml(value){return String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]))}
+    $('exportJson').addEventListener('click',()=>download(`taco-miami-finance-backup-${today()}.json`,JSON.stringify(state,null,2),'application/json'));$('exportCsv').addEventListener('click',()=>{const rows=[['fecha','tipo','tienda_propiedad','descripcion','monto'],...state.movements.map(x=>[x.date,x.type,x.store,x.description,x.amount]),...state.properties.map(x=>[x.date,'property',x.name,x.note,x.amount]),...state.tax.map(x=>[x.date,`tax_${x.type}`,'Sales Tax',x.note,x.amount])];download(`taco-miami-report-${today()}.csv`,rows.map(row=>row.map(csvCell).join(',')).join('\n'),'text/csv')});function csvCell(value){const text=String(value??'');return /[",\n]/.test(text)?`"${text.replaceAll('"','""')}"`:text}function download(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+    $('importButton').addEventListener('click',async()=>{const file=$('importFile').files[0];if(!file)return showNotice('Selecciona un archivo JSON.','err');try{const parsed=JSON.parse(await file.text());state={movements:Array.isArray(parsed.movements)?parsed.movements:[],properties:Array.isArray(parsed.properties)?parsed.properties:[],tax:Array.isArray(parsed.tax)?parsed.tax:[]};save();renderAll();showNotice('Respaldo importado.','ok',4000)}catch{showNotice('El archivo no es un respaldo válido.','err')}});
+    renderAll();bootstrap();
+  </script>
+</body>
+</html>
