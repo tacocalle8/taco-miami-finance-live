@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>Taco Miami | Owner & Finance Hub</title>
+  <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+
+  <style>
+    :root {
+      --bg:#f5f7fb;
+      --card:#fff;
+      --ink:#172033;
+      --muted:#687386;
+      --line:#e4e8f0;
+      --nav:#0f172a;
+      --green:#17864b;
+      --green2:#eaf8f0;
+      --red:#c93c3c;
+      --red2:#fff0f0;
+      --blue:#246bfd;
+      --shadow:0 8px 24px rgba(15,23,42,.07)
+    }
+
+    * { box-sizing:border-box }
+
+    body {
+      margin:0;
+      background:var(--bg);
+      color:var(--ink);
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif
+    }
+
+    button,input,select { font:inherit }
+
+    .top {
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      padding:22px 18px
+    }
+
+    .top-inner {
+      max-width:1180px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px
+    }
+
+    .brand h1 {
+      font-size:22px;
+      margin:0 0 4px
+    }
+
+    .brand p {
+      margin:0;
+      color:#cbd5e1;
+      font-size:13px
+    }
+
+    .badge {
+      background:#ffffff18;
+      border:1px solid #ffffff24;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      white-space:nowrap
+    }
+
+    .nav {
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      position:sticky;
+      top:0;
+      z-index:10;
+      overflow:auto
+    }
+
+    .nav-inner {
+      max-width:1180px;
+      margin:auto;
+      display:flex;
+      gap:4px;
+      padding:8px 12px
+    }
+
+    .tab {
+      border:0;
+      background:transparent;
+      color:var(--muted);
+      font-weight:750;
+      padding:11px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      white-space:nowrap
+    }
+
+    .tab.active {
+      background:#eaf0ff;
+      color:var(--blue)
+    }
+
+    main {
+      max-width:1180px;
+      margin:22px auto;
+      padding:0 14px 50px
+    }
+
+    .page { display:none }
+    .page.active { display:block }
+
+    .page-title {
+      display:flex;
+      align-items:end;
+      justify-content:space-between;
+      gap:12px;
+      margin:0 0 15px
+    }
+
+    .page-title h2 {
+      font-size:21px;
+      margin:0
+    }
+
+    .page-title p {
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:13px
+    }
+
+    .grid {
+      display:grid;
+      gap:14px
+    }
+
+    .summary {
+      grid-template-columns:repeat(5,minmax(0,1fr))
+    }
+
+    .connections {
+      grid-template-columns:repeat(2
