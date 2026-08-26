@@ -1,8 +1,20 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildCloverSummary, normalizePayment, normalizeRefund, sumAdditionalCharges } from '../lib/clover.js';
+import {
+  buildCloverSummary,
+  dateFilterPath,
+  normalizePayment,
+  normalizeRefund,
+  sumAdditionalCharges
+} from '../lib/clover.js';
 
 const merchant = { merchant_id: 'MERCHANT12345', store_key: 'shell' };
+
+test('sends Clover date ranges in one AND filter', () => {
+  const path = dateFilterPath('MERCHANT12345', 'payments', 1000, 2000, 0);
+  const query = new URL(`https://api.clover.com${path}`).searchParams;
+  assert.deepEqual(query.getAll('filter'), ['createdTime>=1000 AND createdTime<=2000']);
+});
 
 test('separates Clover additional charge types', () => {
   assert.deepEqual(sumAdditionalCharges({ additionalCharges: { elements: [
