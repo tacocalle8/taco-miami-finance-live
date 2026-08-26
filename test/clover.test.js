@@ -10,10 +10,10 @@ import {
 
 const merchant = { merchant_id: 'MERCHANT12345', store_key: 'shell' };
 
-test('sends Clover date ranges in one AND filter', () => {
+test('sends Clover date ranges as two filter parameters', () => {
   const path = dateFilterPath('MERCHANT12345', 'payments', 1000, 2000, 0);
   const query = new URL(`https://api.clover.com${path}`).searchParams;
-  assert.deepEqual(query.getAll('filter'), ['createdTime>=1000 AND createdTime<=2000']);
+  assert.deepEqual(query.getAll('filter'), ['createdTime>=1000', 'createdTime<=2000']);
 });
 
 test('separates Clover additional charge types', () => {
