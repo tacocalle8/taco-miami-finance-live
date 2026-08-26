@@ -7,7 +7,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "node --check lib/config.js && node --check lib/db.js && node --check lib/auth.js && node --check api/config.js && node --check api/auth/login.js && node --check api/auth/logout.js && node --check api/auth/session.js && node --check api/plaid/create-link-token.js && node --check api/plaid/exchange-public-token.js && node --check api/plaid/accounts.js && node --check api/plaid/sync-transactions.js"
+    "check": "node --check lib/config.js && node --check lib/db.js && node --check lib/auth.js && node --check lib/clover.js && node --check lib/clover-db.js && node --check api/config.js && node --check api/auth/login.js && node --check api/auth/logout.js && node --check api/auth/session.js && node --check api/plaid/create-link-token.js && node --check api/plaid/exchange-public-token.js && node --check api/plaid/accounts.js && node --check api/plaid/sync-transactions.js && node --check api/clover/connect.js && node --check api/clover/sync.js && node --check api/clover/summary.js",
+    "test": "node --test"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2"
