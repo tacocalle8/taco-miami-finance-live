@@ -84,9 +84,9 @@
 
     <section id="tax" class="page">
       <div class="page-title"><div><h2>Sales Tax trimestral</h2><p>Fondo único con el sales tax combinado de los dos Clover</p></div></div>
-      <div class="card tax-box"><div class="tax-grid"><div><div class="label">TRIMESTRE ACTUAL</div><div id="taxPeriodLabel" class="value tax-text">—</div></div><div><div class="label">COBRADO</div><div id="taxCollected" class="value">$0.00</div></div><div><div class="label">EN SAVINGS</div><div id="taxTransferred" class="value">$0.00</div></div><div><div class="label">FALTA RESERVAR</div><div id="taxPending" class="value pending">$0.00</div></div><div><div class="label">SE PAGA EN</div><div id="taxDue" class="value tax-text">—</div></div></div></div>
-      <div class="card" style="margin-top:14px"><h3 class="section-title">Control por trimestre</h3><p class="property-note">Enero–marzo se paga en abril, abril–junio en julio, julio–septiembre en octubre y octubre–diciembre en enero.</p><div class="table-wrap" style="margin-top:12px"><table class="tax-table"><thead><tr><th>Periodo</th><th>Sales tax de los dos Clover</th><th>Manual</th><th>Reservado en savings</th><th>Falta reservar</th><th>Mes de pago</th></tr></thead><tbody id="taxQuarterRows"><tr><td colspan="6" class="empty">Cargando trimestres…</td></tr></tbody></table></div></div>
-      <form id="taxForm" class="card" style="margin-top:14px"><h3 class="section-title">Registrar movimiento del fondo de sales tax</h3><div class="form-grid"><div class="field"><label>Fecha</label><input id="taxDate" type="date" required></div><div class="field"><label>Trimestre</label><select id="taxPeriod"></select></div><div class="field"><label>Acción</label><select id="taxType"><option value="collected">Sales tax cobrado manualmente</option><option value="transferred">Transferido a savings</option></select></div><div class="field"><label>Monto</label><input id="taxAmount" type="number" min="0" step="0.01" required></div><div class="field full"><label>Nota</label><input id="taxNote" placeholder="Opcional"></div></div><button class="btn btn-dark" style="margin-top:12px" type="submit">Guardar</button></form>
+      <div class="card tax-box"><div class="tax-grid"><div><div class="label">TRIMESTRE ACTUAL</div><div id="taxPeriodLabel" class="value tax-text">—</div></div><div><div class="label">DEBO RESERVAR</div><div id="taxCollected" class="value">$0.00</div></div><div><div class="label">EN CUENTA SAVINGS</div><div id="taxTransferred" class="value">$0.00</div></div><div><div class="label">FALTA DEPOSITAR</div><div id="taxPending" class="value pending">$0.00</div></div><div><div class="label">SE PAGA EN</div><div id="taxDue" class="value tax-text">—</div></div></div></div>
+      <div class="card" style="margin-top:14px"><h3 class="section-title">Control por trimestre</h3><p class="property-note">El fondo actual se toma automáticamente de Wells Fargo Business Market Rate Savings ····4258. Enero–marzo se paga en abril, abril–junio en julio, julio–septiembre en octubre y octubre–diciembre en enero.</p><div class="table-wrap" style="margin-top:12px"><table class="tax-table"><thead><tr><th>Periodo</th><th>Sales tax de los dos Clover</th><th>Manual</th><th>Total requerido</th><th>Saldo savings hoy</th><th>Falta hoy</th><th>Mes de pago</th></tr></thead><tbody id="taxQuarterRows"><tr><td colspan="7" class="empty">Cargando trimestres…</td></tr></tbody></table></div></div>
+      <form id="taxForm" class="card" style="margin-top:14px"><h3 class="section-title">Agregar sales tax cobrado fuera de Clover</h3><p class="property-note" style="margin-bottom:12px">Úsalo solamente para sales tax de ventas en efectivo u otro sistema.</p><input id="taxType" type="hidden" value="collected"><div class="form-grid"><div class="field"><label>Fecha</label><input id="taxDate" type="date" required></div><div class="field"><label>Trimestre</label><select id="taxPeriod"></select></div><div class="field"><label>Monto</label><input id="taxAmount" type="number" min="0" step="0.01" required></div><div class="field"><label>Nota</label><input id="taxNote" placeholder="Opcional"></div></div><button class="btn btn-dark" style="margin-top:12px" type="submit">Guardar</button></form>
     </section>
 
     <section id="reportes" class="page">
@@ -171,26 +171,27 @@
       const currentQuarter=Math.floor((Number(today().slice(5,7))-1)/3)+1;
       const currentId=`${year}-Q${currentQuarter}`;
       const quarters=taxData.quarters||[];
+      const savingsBalance=bankAccounts.filter(item=>item.subtype==='savings'||item.mask==='4258').reduce((sum,item)=>sum+Number(item.current_balance||0),0);
       const totals=quarters.map(quarter=>{
         const entries=state.tax.filter(item=>(item.period||taxPeriodFromDate(item.date))===quarter.id);
         const manualCollected=entries.filter(item=>item.type==='collected').reduce((sum,item)=>sum+Number(item.amount||0),0);
-        const transferred=entries.filter(item=>item.type==='transferred').reduce((sum,item)=>sum+Number(item.amount||0),0);
-        const clover=Number(quarter.taxCents||0)/100;
-        const collected=clover+manualCollected;
-        return {...quarter,clover,manualCollected,collected,transferred,pending:Math.max(0,collected-transferred)};
+        const clover=quarter.taxCents===null?null:Number(quarter.taxCents||0)/100;
+        const collected=clover===null?null:clover+manualCollected;
+        return {...quarter,clover,manualCollected,collected};
       });
-      const current=totals.find(item=>item.id===currentId)||totals[0]||{periodLabel:'—',paymentLabel:'—',collected:0,transferred:0,pending:0};
+      const current=totals.find(item=>item.id===currentId)||totals[0]||{periodLabel:'—',paymentLabel:'—',collected:0};
+      const currentRequired=Number(current.collected||0),currentShortfall=Math.max(0,currentRequired-savingsBalance);
       $('taxPeriodLabel').textContent=current.periodLabel;
-      $('taxCollected').textContent=money(current.collected);
-      $('taxTransferred').textContent=money(current.transferred);
-      $('taxPending').textContent=money(current.pending);
+      $('taxCollected').textContent=money(currentRequired);
+      $('taxTransferred').textContent=money(savingsBalance);
+      $('taxPending').textContent=money(currentShortfall);
       $('taxDue').textContent=current.paymentLabel;
-      $('mTax').textContent=money(current.pending);
-      $('mTaxNote').textContent=`${current.periodLabel} · se paga en ${current.paymentLabel}`;
+      $('mTax').textContent=money(currentShortfall);
+      $('mTaxNote').textContent=`Faltan en savings · se paga en ${current.paymentLabel}`;
       const selected=$('taxPeriod').value||current.id;
       $('taxPeriod').innerHTML=totals.map(item=>`<option value="${item.id}">${item.periodLabel} ${item.year} · paga ${item.paymentLabel}</option>`).join('');
       if(totals.some(item=>item.id===selected))$('taxPeriod').value=selected;
-      $('taxQuarterRows').innerHTML=totals.length?totals.map(item=>`<tr><td><strong>${item.periodLabel} ${item.year}</strong></td><td>${money(item.clover)}</td><td>${money(item.manualCollected)}</td><td>${money(item.transferred)}</td><td class="${item.pending>0?'red':'green'}"><strong>${money(item.pending)}</strong></td><td>${item.paymentLabel}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No hay datos trimestrales.</td></tr>';
+      $('taxQuarterRows').innerHTML=totals.length?totals.map(item=>{const isCurrent=item.id===currentId,autoTax=item.clover===null?'Sin historial':`${money(item.clover)}${item.coverage==='partial'?' · parcial':''}`,required=item.collected===null?'—':money(item.collected),shortfall=isCurrent?Math.max(0,Number(item.collected||0)-savingsBalance):null;return `<tr><td><strong>${item.periodLabel} ${item.year}</strong></td><td>${autoTax}</td><td>${money(item.manualCollected)}</td><td><strong>${required}</strong></td><td>${isCurrent?money(savingsBalance):'—'}</td><td class="${isCurrent&&shortfall>0?'red':'green'}"><strong>${isCurrent?money(shortfall):'—'}</strong></td><td>${item.paymentLabel}</td></tr>`}).join(''):'<tr><td colspan="7" class="empty">No hay datos trimestrales.</td></tr>';
     }
     function renderMetrics(){const month=today().slice(0,7),manualIncome=state.movements.filter(item=>item.date.startsWith(month)&&item.type==='income').reduce((sum,item)=>sum+item.amount,0)+state.properties.filter(item=>item.date.startsWith(month)).reduce((sum,item)=>sum+item.amount,0),manualExpense=state.movements.filter(item=>item.date.startsWith(month)&&item.type==='expense').reduce((sum,item)=>sum+item.amount,0),bankExpense=bankTransactions.filter(item=>String(item.date).startsWith(month)&&Number(item.amount)>0).reduce((sum,item)=>sum+Number(item.amount),0),income=manualIncome+Number(currentCloverTotal.netSalesCents||0)/100,expense=manualExpense+bankExpense,net=income-expense,balance=bankAccounts.reduce((sum,item)=>sum+Number(item.current_balance||0),0);$('mBank').textContent=money(balance);$('mIncome').textContent=money(income);$('mExpense').textContent=money(expense);$('mNet').textContent=money(net);$('mNet').className=`value ${net<0?'red':'green'}`}
     function expenseCategory(transaction){const personal=transaction.personal_finance_category;if(personal&&typeof personal==='object'&&personal.primary)return String(personal.primary).replaceAll('_',' ').toLowerCase().replace(/(^|\s)\S/g,char=>char.toUpperCase());if(Array.isArray(transaction.category)&&transaction.category[0])return transaction.category[0];return 'Sin categoría'}
