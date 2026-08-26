@@ -24,17 +24,18 @@ test('assigns Food Truck Original totals to the scheduled visit date', () => {
     refund_tax_cents: 33, refund_fee_cents: 0, refunds: 1
   }]);
   assert.equal(combined[0].netCents, 10550);
+  assert.equal(combined[0].netSalesCents, 8883);
   assert.equal(combined[0].taxCents, 617);
   assert.equal(combined[0].transactions, 12);
 });
 
 test('summarizes sales and completed visits by property', () => {
   const totals = summarizeVisitsByProperty([
-    { propertyName: 'Mirador Doral', netCents: 1000, taxCents: 65, tipsCents: 100, refundsCents: 0, transactions: 2 },
-    { propertyName: 'Mirador Doral', netCents: 0, taxCents: 0, tipsCents: 0, refundsCents: 0, transactions: 0 }
+    { propertyName: 'Mirador Doral', netCents: 1000, netSalesCents: 800, taxCents: 65, tipsCents: 100, refundsCents: 0, transactions: 2 },
+    { propertyName: 'Mirador Doral', netCents: 0, netSalesCents: 0, taxCents: 0, tipsCents: 0, refundsCents: 0, transactions: 0 }
   ]);
   assert.deepEqual(totals[0], {
-    propertyName: 'Mirador Doral', visits: 2, completedVisits: 1, netCents: 1000,
+    propertyName: 'Mirador Doral', visits: 2, completedVisits: 1, netCents: 1000, netSalesCents: 800,
     taxCents: 65, tipsCents: 100, refundsCents: 0, transactions: 2
   });
 });

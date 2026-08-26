@@ -51,6 +51,7 @@ test('builds per-store and combined monthly totals', () => {
   const summary = buildCloverSummary([merchant], payments, refunds);
   assert.equal(summary.total.taxCents, 140);
   assert.equal(summary.total.refundsCents, 518);
+  assert.equal(summary.total.netSalesCents, 1860);
   assert.equal(summary.total.netCents, 2587);
   assert.equal(summary.byStore.shell.transactions, 1);
 });

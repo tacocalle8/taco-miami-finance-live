@@ -16,7 +16,15 @@ export default async function handler(req, res) {
     let payments = 0;
     let refunds = 0;
     for (const merchant of merchants) {
-      const data = await fetchRecentCloverData(merchant);
+      const now = Date.now();
+      const maximumHistory = now - 89 * 24 * 60 * 60 * 1000;
+      const overlapStart = merchant.last_synced_at
+        ? new Date(merchant.last_synced_at).getTime() - 24 * 60 * 60 * 1000
+        : maximumHistory;
+      const data = await fetchRecentCloverData(merchant, {
+        startMs: Math.max(maximumHistory, overlapStart),
+        endMs: now
+      });
       await upsertCloverPayments(data.payments);
       await upsertCloverRefunds(data.refunds);
       await markCloverSynced(merchant.store_key);
