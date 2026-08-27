@@ -8,7 +8,9 @@ import {
 
 test('contains the approved 2026 property calendar without December 31', () => {
   const visits = listPropertyVisits(2026);
-  assert.equal(visits.length, 42);
+  assert.equal(visits.length, 44);
+  assert.ok(visits.some(visit => visit.date === '2026-08-04' && visit.propertyName === 'Remi on the River'));
+  assert.ok(visits.some(visit => visit.date === '2026-07-29' && visit.propertyName === 'Solena Miramar'));
   assert.ok(visits.some(visit => visit.date === '2026-09-23' && visit.propertyName === 'Solena Miramar'));
   assert.ok(visits.some(visit => visit.date === '2026-08-14' && visit.propertyName === 'Grove Station'));
   assert.equal(visits.some(visit => visit.date === '2026-12-31'), false);
