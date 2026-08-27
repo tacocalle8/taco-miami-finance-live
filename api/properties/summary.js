@@ -43,6 +43,7 @@ export default async function handler(req, res) {
     const [paymentRows, refundRows] = await Promise.all([
       sql`
         SELECT
+          store_key,
           TO_CHAR(TO_TIMESTAMP(created_time / 1000.0) AT TIME ZONE 'America/New_York', 'YYYY-MM-DD') AS visit_date,
           COALESCE(SUM(amount_cents), 0) AS payment_amount_cents,
           COALESCE(SUM(tip_cents), 0) AS payment_tip_cents,
@@ -50,14 +51,15 @@ export default async function handler(req, res) {
           COALESCE(SUM(surcharge_cents + convenience_fee_cents + other_charge_cents), 0) AS payment_fee_cents,
           COUNT(*) AS transactions
         FROM clover_payments
-        WHERE store_key = 'original'
+        WHERE store_key IN ('original', 'shell')
           AND created_time >= ${startMs}
           AND created_time < ${endMs}
           AND (result IS NULL OR result = 'SUCCESS')
-        GROUP BY visit_date
+        GROUP BY store_key, visit_date
       `,
       sql`
         SELECT
+          store_key,
           TO_CHAR(TO_TIMESTAMP(created_time / 1000.0) AT TIME ZONE 'America/New_York', 'YYYY-MM-DD') AS visit_date,
           COALESCE(SUM(amount_cents), 0) AS refund_amount_cents,
           COALESCE(SUM(tip_cents), 0) AS refund_tip_cents,
@@ -65,11 +67,11 @@ export default async function handler(req, res) {
           COALESCE(SUM(surcharge_cents + convenience_fee_cents + other_charge_cents), 0) AS refund_fee_cents,
           COUNT(*) AS refunds
         FROM clover_refunds
-        WHERE store_key = 'original'
+        WHERE store_key IN ('original', 'shell')
           AND created_time >= ${startMs}
           AND created_time < ${endMs}
           AND (result IS NULL OR result = 'SUCCESS')
-        GROUP BY visit_date
+        GROUP BY store_key, visit_date
       `
     ]);
     const visits = combineVisitSales(scheduledVisits, paymentRows, refundRows);
@@ -77,7 +79,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       year,
-      attribution: 'Todas las ventas de Food Truck Original del día se asignan a la propiedad programada.',
+      attribution: 'Las ventas del Clover usado en cada visita se asignan a la propiedad programada; Grove Station del 14 de julio usa Clover Shell.',
       visits,
       properties: summarizeVisitsByProperty(visits)
     });

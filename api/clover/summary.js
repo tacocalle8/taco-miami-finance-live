@@ -25,17 +25,51 @@ function monthBounds(month) {
   };
 }
 
+function newYorkDateString(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date);
+  const value = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${value.year}-${value.month}-${value.day}`;
+}
+
+function newYorkDayMidnight(date) {
+  const [year, month, day] = date.split('-').map(Number);
+  const utcNoon = new Date(Date.UTC(year, month - 1, day, 12));
+  const zoneName = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    timeZoneName: 'longOffset'
+  }).formatToParts(utcNoon).find(part => part.type === 'timeZoneName')?.value || 'GMT-05:00';
+  const match = zoneName.match(/GMT([+-])(\d{2}):(\d{2})/);
+  const direction = match?.[1] === '+' ? 1 : -1;
+  const offsetMinutes = match ? direction * (Number(match[2]) * 60 + Number(match[3])) : -300;
+  return Date.UTC(year, month - 1, day) - offsetMinutes * 60 * 1000;
+}
+
+function nextDate(date) {
+  const [year, month, day] = date.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day + 1)).toISOString().slice(0, 10);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'Método no permitido.' });
   if (!requireAuth(req, res)) return;
   try {
     const bounds = monthBounds(req.query?.month);
+    const todayDate = newYorkDateString();
+    const todayStartMs = newYorkDayMidnight(todayDate);
+    const todayEndMs = newYorkDayMidnight(nextDate(todayDate));
     const merchants = await listCloverMerchants();
-    const [activity, aggregate] = await Promise.all([
+    const [activity, aggregate, todayAggregate] = await Promise.all([
       listCloverActivity(bounds.startMs, bounds.endMs, req.query?.limit),
-      aggregateCloverActivity(bounds.startMs, bounds.endMs)
+      aggregateCloverActivity(bounds.startMs, bounds.endMs),
+      aggregateCloverActivity(todayStartMs, todayEndMs)
     ]);
     const summary = buildCloverSummary(merchants, aggregate.payments, aggregate.refunds);
+    const todaySummary = buildCloverSummary(merchants, todayAggregate.payments, todayAggregate.refunds);
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({
       ok: true,
@@ -43,7 +77,8 @@ export default async function handler(req, res) {
       merchants,
       payments: activity.payments,
       refunds: activity.refunds,
-      summary
+      summary,
+      today: { date: todayDate, summary: todaySummary }
     });
   } catch (error) {
     return sendError(res, error);

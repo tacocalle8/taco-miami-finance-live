@@ -15,6 +15,23 @@ test('contains the approved 2026 property calendar without December 31', () => {
   assert.ok(visits.some(visit => visit.date === '2026-09-23' && visit.propertyName === 'Solena Miramar'));
   assert.ok(visits.some(visit => visit.date === '2026-08-14' && visit.propertyName === 'Grove Station'));
   assert.equal(visits.some(visit => visit.date === '2026-12-31'), false);
+  assert.equal(visits.find(visit => visit.date === '2026-07-14' && visit.propertyName === 'Grove Station').storeKey, 'shell');
+  assert.equal(visits.find(visit => visit.date === '2026-08-14' && visit.propertyName === 'Grove Station').storeKey, 'original');
+});
+
+test('uses the Clover store assigned to each property visit', () => {
+  const visits = [
+    { date: '2026-07-14', propertyName: 'Grove Station', storeKey: 'shell' },
+    { date: '2026-07-14', propertyName: 'Otra propiedad', storeKey: 'original' }
+  ];
+  const combined = combineVisitSales(visits, [
+    { store_key: 'shell', visit_date: '2026-07-14', payment_amount_cents: 25000, transactions: 8 },
+    { store_key: 'original', visit_date: '2026-07-14', payment_amount_cents: 10000, transactions: 3 }
+  ]);
+  assert.equal(combined[0].netSalesCents, 25000);
+  assert.equal(combined[0].transactions, 8);
+  assert.equal(combined[1].netSalesCents, 10000);
+  assert.equal(combined[1].transactions, 3);
 });
 
 test('assigns Food Truck Original totals to the scheduled visit date', () => {
