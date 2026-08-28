@@ -54,6 +54,11 @@ function nextDate(date) {
   return new Date(Date.UTC(year, month - 1, day + 1)).toISOString().slice(0, 10);
 }
 
+function previousDate(date) {
+  const [year, month, day] = date.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day - 1)).toISOString().slice(0, 10);
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'Método no permitido.' });
   if (!requireAuth(req, res)) return;
@@ -62,14 +67,19 @@ export default async function handler(req, res) {
     const todayDate = newYorkDateString();
     const todayStartMs = newYorkDayMidnight(todayDate);
     const todayEndMs = newYorkDayMidnight(nextDate(todayDate));
+    const yesterdayDate = previousDate(todayDate);
+    const yesterdayStartMs = newYorkDayMidnight(yesterdayDate);
+    const yesterdayEndMs = todayStartMs;
     const merchants = await listCloverMerchants();
-    const [activity, aggregate, todayAggregate] = await Promise.all([
+    const [activity, aggregate, todayAggregate, yesterdayAggregate] = await Promise.all([
       listCloverActivity(bounds.startMs, bounds.endMs, req.query?.limit),
       aggregateCloverActivity(bounds.startMs, bounds.endMs),
-      aggregateCloverActivity(todayStartMs, todayEndMs)
+      aggregateCloverActivity(todayStartMs, todayEndMs),
+      aggregateCloverActivity(yesterdayStartMs, yesterdayEndMs)
     ]);
     const summary = buildCloverSummary(merchants, aggregate.payments, aggregate.refunds);
     const todaySummary = buildCloverSummary(merchants, todayAggregate.payments, todayAggregate.refunds);
+    const yesterdaySummary = buildCloverSummary(merchants, yesterdayAggregate.payments, yesterdayAggregate.refunds);
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({
       ok: true,
@@ -78,7 +88,8 @@ export default async function handler(req, res) {
       payments: activity.payments,
       refunds: activity.refunds,
       summary,
-      today: { date: todayDate, summary: todaySummary }
+      today: { date: todayDate, summary: todaySummary },
+      yesterday: { date: yesterdayDate, summary: yesterdaySummary }
     });
   } catch (error) {
     return sendError(res, error);
