@@ -2,6 +2,7 @@ import { requireAuth } from '../../lib/auth.js';
 import { buildCloverSummary } from '../../lib/clover.js';
 import { aggregateCloverActivity, listCloverActivity, listCloverMerchants } from '../../lib/clover-db.js';
 import { sendError } from '../../lib/config.js';
+import { salesWeekPeriods, shiftDate } from '../../lib/sales-periods.js';
 
 function newYorkMidnight(year, monthIndex) {
   const utcNoon = new Date(Date.UTC(year, monthIndex, 1, 12));
@@ -49,16 +50,6 @@ function newYorkDayMidnight(date) {
   return Date.UTC(year, month - 1, day) - offsetMinutes * 60 * 1000;
 }
 
-function nextDate(date) {
-  const [year, month, day] = date.split('-').map(Number);
-  return new Date(Date.UTC(year, month - 1, day + 1)).toISOString().slice(0, 10);
-}
-
-function previousDate(date) {
-  const [year, month, day] = date.split('-').map(Number);
-  return new Date(Date.UTC(year, month - 1, day - 1)).toISOString().slice(0, 10);
-}
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'Método no permitido.' });
   if (!requireAuth(req, res)) return;
@@ -66,20 +57,37 @@ export default async function handler(req, res) {
     const bounds = monthBounds(req.query?.month);
     const todayDate = newYorkDateString();
     const todayStartMs = newYorkDayMidnight(todayDate);
-    const todayEndMs = newYorkDayMidnight(nextDate(todayDate));
-    const yesterdayDate = previousDate(todayDate);
+    const todayEndMs = newYorkDayMidnight(shiftDate(todayDate, 1));
+    const yesterdayDate = shiftDate(todayDate, -1);
     const yesterdayStartMs = newYorkDayMidnight(yesterdayDate);
     const yesterdayEndMs = todayStartMs;
+    const week = salesWeekPeriods(todayDate);
+    const mondayToThursdayStartMs = newYorkDayMidnight(week.mondayToThursday.startDate);
+    const mondayToThursdayEndMs = newYorkDayMidnight(week.mondayToThursday.endExclusiveDate);
+    const fridayToSundayStartMs = newYorkDayMidnight(week.fridayToSunday.startDate);
+    const fridayToSundayEndMs = newYorkDayMidnight(week.fridayToSunday.endExclusiveDate);
     const merchants = await listCloverMerchants();
-    const [activity, aggregate, todayAggregate, yesterdayAggregate] = await Promise.all([
+    const [activity, aggregate, todayAggregate, yesterdayAggregate, mondayToThursdayAggregate, fridayToSundayAggregate] = await Promise.all([
       listCloverActivity(bounds.startMs, bounds.endMs, req.query?.limit),
       aggregateCloverActivity(bounds.startMs, bounds.endMs),
       aggregateCloverActivity(todayStartMs, todayEndMs),
-      aggregateCloverActivity(yesterdayStartMs, yesterdayEndMs)
+      aggregateCloverActivity(yesterdayStartMs, yesterdayEndMs),
+      aggregateCloverActivity(mondayToThursdayStartMs, mondayToThursdayEndMs),
+      aggregateCloverActivity(fridayToSundayStartMs, fridayToSundayEndMs)
     ]);
     const summary = buildCloverSummary(merchants, aggregate.payments, aggregate.refunds);
     const todaySummary = buildCloverSummary(merchants, todayAggregate.payments, todayAggregate.refunds);
     const yesterdaySummary = buildCloverSummary(merchants, yesterdayAggregate.payments, yesterdayAggregate.refunds);
+    const mondayToThursdaySummary = buildCloverSummary(
+      merchants,
+      mondayToThursdayAggregate.payments,
+      mondayToThursdayAggregate.refunds
+    );
+    const fridayToSundaySummary = buildCloverSummary(
+      merchants,
+      fridayToSundayAggregate.payments,
+      fridayToSundayAggregate.refunds
+    );
     res.setHeader('Cache-Control', 'no-store');
     return res.status(200).json({
       ok: true,
@@ -89,7 +97,21 @@ export default async function handler(req, res) {
       refunds: activity.refunds,
       summary,
       today: { date: todayDate, summary: todaySummary },
-      yesterday: { date: yesterdayDate, summary: yesterdaySummary }
+      yesterday: { date: yesterdayDate, summary: yesterdaySummary },
+      week: {
+        startDate: week.startDate,
+        endDate: week.endDate,
+        mondayToThursday: {
+          startDate: week.mondayToThursday.startDate,
+          endDate: week.mondayToThursday.endDate,
+          summary: mondayToThursdaySummary
+        },
+        fridayToSunday: {
+          startDate: week.fridayToSunday.startDate,
+          endDate: week.fridayToSunday.endDate,
+          summary: fridayToSundaySummary
+        }
+      }
     });
   } catch (error) {
     return sendError(res, error);
