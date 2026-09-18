@@ -27,7 +27,8 @@ test('separates Clover additional charge types', () => {
 test('normalizes payments and refunds in cents', () => {
   const payment = normalizePayment({
     id: 'PAY1', amount: 2500, tipAmount: 500, taxAmount: 175, createdTime: 1000,
-    result: 'SUCCESS', additionalCharges: { elements: [{ type: 'CREDIT_SURCHARGE', amount: 105 }] }
+    result: 'SUCCESS', tender: { id: 'CASH', type: 'CASH', label: 'Cash' },
+    additionalCharges: { elements: [{ type: 'CREDIT_SURCHARGE', amount: 105 }] }
   }, merchant);
   const refund = normalizeRefund({
     id: 'REF1', amount: 500, taxAmount: 35, createdTime: 2000,
@@ -35,6 +36,7 @@ test('normalizes payments and refunds in cents', () => {
   }, merchant);
   assert.equal(payment.surchargeCents, 105);
   assert.equal(payment.tipCents, 500);
+  assert.equal(payment.tenderLabel, 'Cash');
   assert.equal(refund.taxCents, 35);
   assert.equal(refund.paymentId, null);
 });
@@ -54,4 +56,24 @@ test('builds per-store and combined monthly totals', () => {
   assert.equal(summary.total.netSalesCents, 1860);
   assert.equal(summary.total.netCents, 2587);
   assert.equal(summary.byStore.shell.transactions, 1);
+});
+
+test('tracks cash Clover income separately without changing the general total', () => {
+  const payments = [{
+    store_key: 'shell', result: 'SUCCESS', amount_cents: 1100, tip_cents: 100, tax_cents: 100,
+    surcharge_cents: 0, convenience_fee_cents: 0, other_charge_cents: 0,
+    cash_amount_cents: 1100, cash_tip_cents: 100, cash_tax_cents: 100, cash_fees_cents: 0,
+    cash_transaction_count: 1, transaction_count: 1
+  }];
+  const refunds = [{
+    store_key: 'shell', result: 'SUCCESS', amount_cents: 100, tip_cents: 0, tax_cents: 10,
+    surcharge_cents: 0, convenience_fee_cents: 0, other_charge_cents: 0,
+    cash_refund_amount_cents: 100, cash_refunded_tax_cents: 10, cash_refunds_cents: 100,
+    cash_refund_count: 1, refund_count: 1
+  }];
+  const summary = buildCloverSummary([merchant], payments, refunds);
+  assert.equal(summary.total.cash.netSalesCents, 910);
+  assert.equal(summary.total.cash.netCents, 1100);
+  assert.equal(summary.total.cash.transactions, 1);
+  assert.equal(summary.total.netSalesCents, 910);
 });
