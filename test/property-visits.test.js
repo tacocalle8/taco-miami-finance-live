@@ -8,7 +8,7 @@ import {
 
 test('contains the approved 2026 property calendar without December 31', () => {
   const visits = listPropertyVisits(2026);
-  assert.equal(visits.length, 45);
+  assert.equal(visits.length, 53);
   assert.ok(visits.some(visit => visit.date === '2026-08-04' && visit.propertyName === 'Remi on the River'));
   assert.ok(visits.some(visit => visit.date === '2026-07-29' && visit.propertyName === 'Solena Miramar'));
   assert.ok(visits.some(visit => visit.date === '2026-07-14' && visit.propertyName === 'Grove Station'));
@@ -17,6 +17,9 @@ test('contains the approved 2026 property calendar without December 31', () => {
   assert.equal(visits.some(visit => visit.date === '2026-12-31'), false);
   assert.equal(visits.find(visit => visit.date === '2026-07-14' && visit.propertyName === 'Grove Station').storeKey, 'shell');
   assert.equal(visits.find(visit => visit.date === '2026-08-14' && visit.propertyName === 'Grove Station').storeKey, 'original');
+  for (const date of ['2026-09-23', '2026-10-07', '2026-10-21', '2026-11-04', '2026-11-18', '2026-12-02', '2026-12-16', '2026-12-30']) {
+    assert.ok(visits.some(visit => visit.date === date && visit.propertyName === 'Remi on the River'));
+  }
 });
 
 test('uses the Clover store assigned to each property visit', () => {
@@ -47,6 +50,20 @@ test('assigns Food Truck Original totals to the scheduled visit date', () => {
   assert.equal(combined[0].netSalesCents, 8883);
   assert.equal(combined[0].taxCents, 617);
   assert.equal(combined[0].transactions, 12);
+});
+
+test('prioritizes Remi on the River when a Wednesday has another same-truck visit', () => {
+  const visits = [
+    { id: '2026-09-23:Solena Miramar', date: '2026-09-23', propertyName: 'Solena Miramar', storeKey: 'original' },
+    { id: '2026-09-23:Remi on the River', date: '2026-09-23', propertyName: 'Remi on the River', storeKey: 'original' }
+  ];
+  const combined = combineVisitSales(visits, [{
+    visit_date: '2026-09-23', payment_amount_cents: 10000, payment_tax_cents: 650, transactions: 4
+  }]);
+  assert.equal(combined[0].transactions, 0);
+  assert.equal(combined[0].netSalesCents, 0);
+  assert.equal(combined[1].transactions, 4);
+  assert.equal(combined[1].netSalesCents, 9350);
 });
 
 test('summarizes sales and completed visits by property', () => {
