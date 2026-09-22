@@ -12,6 +12,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Método no permitido.' });
   if (!requireAuth(req, res)) return;
   try {
+    const fullHistory = req.body?.fullHistory === true || String(req.query?.fullHistory || '') === 'true';
     const merchants = await listCloverMerchants({ includeTokens: true });
     let payments = 0;
     let refunds = 0;
@@ -22,7 +23,7 @@ export default async function handler(req, res) {
         ? new Date(merchant.last_synced_at).getTime() - 24 * 60 * 60 * 1000
         : maximumHistory;
       const data = await fetchRecentCloverData(merchant, {
-        startMs: Math.max(maximumHistory, overlapStart),
+        startMs: fullHistory ? maximumHistory : Math.max(maximumHistory, overlapStart),
         endMs: now
       });
       await upsertCloverPayments(data.payments);
