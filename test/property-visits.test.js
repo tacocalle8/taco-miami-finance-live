@@ -8,7 +8,8 @@ import {
 
 test('contains the approved 2026 property calendar without December 31', () => {
   const visits = listPropertyVisits(2026);
-  assert.equal(visits.length, 52);
+  assert.equal(visits.length, 56);
+  assert.equal(visits.some(visit => visit.date === '2026-10-21' && visit.propertyName === 'Remi on the River'), false);
   assert.ok(visits.some(visit => visit.date === '2026-08-04' && visit.propertyName === 'Remi on the River'));
   assert.ok(visits.some(visit => visit.date === '2026-07-29' && visit.propertyName === 'Solena Miramar'));
   assert.ok(visits.some(visit => visit.date === '2026-07-14' && visit.propertyName === 'Grove Station'));
@@ -17,7 +18,7 @@ test('contains the approved 2026 property calendar without December 31', () => {
   assert.equal(visits.some(visit => visit.date === '2026-12-31'), false);
   assert.equal(visits.find(visit => visit.date === '2026-07-14' && visit.propertyName === 'Grove Station').storeKey, 'shell');
   assert.equal(visits.find(visit => visit.date === '2026-08-14' && visit.propertyName === 'Grove Station').storeKey, 'original');
-  for (const date of ['2026-09-23', '2026-10-07', '2026-10-21', '2026-11-04', '2026-11-18', '2026-12-02', '2026-12-16', '2026-12-30']) {
+  for (const date of ['2026-09-23', '2026-10-07', '2026-10-19', '2026-11-04', '2026-11-18', '2026-12-02', '2026-12-16', '2026-12-30']) {
     assert.ok(visits.some(visit => visit.date === date && visit.propertyName === 'Remi on the River'));
   }
 });
@@ -75,4 +76,29 @@ test('summarizes sales and completed visits by property', () => {
     propertyName: 'Mirador Doral', visits: 2, completedVisits: 1, netCents: 1000, netSalesCents: 800,
     taxCents: 65, tipsCents: 100, refundsCents: 0, transactions: 2
   });
+});
+
+test('separates the tax-exempt UM payment from AMLI without changing daily totals', () => {
+  const visits = listPropertyVisits(2026).filter(visit => visit.date === '2026-10-15');
+  const rows = combineVisitSales(visits, [{
+    store_key: 'original', visit_date: '2026-10-15',
+    payment_amount_cents: 279174, payment_tax_cents: 6372,
+    payment_tip_cents: 7326, transactions: 34
+  }], [{
+    store_key: 'original', visit_date: '2026-10-15',
+    refund_amount_cents: 1775, refunds: 1
+  }]);
+  const um = rows.find(row => row.propertyName === 'Universidad de Miami');
+  const amli = rows.find(row => row.propertyName === 'AMLI 8800');
+  assert.equal(um.netSalesCents, 180000);
+  assert.equal(um.taxCents, 0);
+  assert.equal(um.transactions, 1);
+  assert.equal(amli.netSalesCents, 91027);
+  assert.equal(amli.netCents, 104725);
+  assert.equal(amli.taxCents, 6372);
+  assert.equal(amli.tipsCents, 7326);
+  assert.equal(amli.transactions, 33);
+  assert.equal(rows.reduce((sum, row) => sum + row.netCents, 0), 284725);
+  assert.equal(rows.reduce((sum, row) => sum + row.netSalesCents, 0), 271027);
+  assert.deepEqual(combineVisitSales(visits).map(row => row.netCents), [0, 0]);
 });

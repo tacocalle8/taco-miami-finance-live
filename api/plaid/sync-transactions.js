@@ -1,6 +1,6 @@
 import { requireAuth } from '../../lib/auth.js';
 import { plaidRequest, sendError } from '../../lib/config.js';
-import { decryptToken, listItems, saveCursor, upsertTransactions } from '../../lib/db.js';
+import { decryptToken, listItems, saveCursor, updateAccountBalances, upsertTransactions } from '../../lib/db.js';
 
 async function syncItem(item) {
   const accessToken = decryptToken(item.access_token_encrypted);
@@ -25,6 +25,10 @@ async function syncItem(item) {
     pageCount += 1;
   }
   await saveCursor(item.item_id, cursor || null);
+  // Transactions sync does not refresh the stored account balances.
+  // Read the latest balances available from Plaid even when no transactions changed.
+  const accountData = await plaidRequest('/accounts/get', { access_token: accessToken });
+  await updateAccountBalances(item.item_id, accountData.accounts || []);
   return changed;
 }
 
