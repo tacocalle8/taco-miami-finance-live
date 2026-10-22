@@ -8,7 +8,7 @@ import {
 
 test('contains the approved 2026 property calendar without December 31', () => {
   const visits = listPropertyVisits(2026);
-  assert.equal(visits.length, 56);
+  assert.equal(visits.length, 66);
   assert.equal(visits.some(visit => visit.date === '2026-10-21' && visit.propertyName === 'Remi on the River'), false);
   assert.ok(visits.some(visit => visit.date === '2026-08-04' && visit.propertyName === 'Remi on the River'));
   assert.ok(visits.some(visit => visit.date === '2026-07-29' && visit.propertyName === 'Solena Miramar'));
@@ -21,6 +21,27 @@ test('contains the approved 2026 property calendar without December 31', () => {
   for (const date of ['2026-09-23', '2026-10-07', '2026-10-19', '2026-11-04', '2026-11-18', '2026-12-02', '2026-12-16', '2026-12-30']) {
     assert.ok(visits.some(visit => visit.date === date && visit.propertyName === 'Remi on the River'));
   }
+});
+
+test('assigns approved AMLI Mondays to On Tour while keeping Wednesdays for Remi', () => {
+  const visits = listPropertyVisits(2026);
+  const amli = visits.filter(visit => visit.propertyName === 'AMLI 8800' && visit.date >= '2026-10-26');
+  assert.equal(amli.length, 10);
+  assert.equal(amli[0].date, '2026-10-26');
+  assert.equal(amli.at(-1).date, '2026-12-28');
+  for (const visit of amli) {
+    assert.equal(new Date(`${visit.date}T12:00:00Z`).getUTCDay(), 1);
+    assert.equal(visit.storeKey, 'original');
+    assert.equal(visit.eventTime, '5:00–10:00 pm');
+    assert.equal(visits.filter(other => other.date === visit.date && other.storeKey === 'original').length, 1);
+  }
+  const combined = combineVisitSales(visits, [
+    { store_key: 'original', visit_date: '2026-11-02', payment_amount_cents: 10000, transactions: 4 },
+    { store_key: 'original', visit_date: '2026-11-04', payment_amount_cents: 20000, transactions: 8 }
+  ]);
+  assert.equal(combined.find(visit => visit.date === '2026-11-02' && visit.propertyName === 'AMLI 8800').netSalesCents, 10000);
+  assert.equal(combined.find(visit => visit.date === '2026-11-04' && visit.propertyName === 'Remi on the River').netSalesCents, 20000);
+  assert.equal(summarizeVisitsByProperty(combined).find(row => row.propertyName === 'AMLI 8800').visits, 12);
 });
 
 test('uses the Clover store assigned to each property visit', () => {
